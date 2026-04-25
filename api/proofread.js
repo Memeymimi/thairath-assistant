@@ -1,9 +1,8 @@
-export default async function handler(req, res) {
+module.exports = async function (req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
     
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-        console.error("❌ ไม่พบ API Key (ระบบ Vercel หากุญแจไม่เจอ)");
         return res.status(500).json({ error: 'ไม่พบ API Key - กรุณาเช็ก Environment Variables ใน Vercel' });
     }
 
@@ -13,7 +12,6 @@ export default async function handler(req, res) {
     ห้ามเอาคำเชื่อม (เช่น เพราะ จึง และ หรือ) มาเป็นคำผิดเด็ดขาด ข้อมูล wrong ต้องดึงมาจากต้นฉบับเป๊ะๆ`;
 
     try {
-        // ใช้ Gemini 1.5 Flash (รุ่นเสถียร)
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST', 
             headers: { 'Content-Type': 'application/json' },
@@ -26,16 +24,13 @@ export default async function handler(req, res) {
         
         const data = await response.json();
         
-        // ถ้า Google แจ้ง Error กลับมา
         if (!response.ok) {
-            console.error("❌ Google API Error:", data);
             return res.status(500).json({ error: 'Google API ฟ้องว่า: ' + (data.error?.message || 'Unknown Error') });
         }
 
         let cleaned = data.candidates[0].content.parts[0].text.replace(/```json/gi, '').replace(/```/g, '').trim();
         return res.status(200).json(JSON.parse(cleaned));
     } catch (error) { 
-        console.error("❌ System Error:", error);
         return res.status(500).json({ error: 'ระบบหลังบ้านทำงานผิดพลาด: ' + error.message }); 
     }
-}
+};
