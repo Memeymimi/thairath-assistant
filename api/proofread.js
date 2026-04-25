@@ -7,9 +7,8 @@ module.exports = async function (req, res) {
     }
 
     const { text } = req.body;
-    const systemInstruction = `คุณคือผู้เชี่ยวชาญด้านการพิสูจน์อักษรของ "Thairath Plus" หน้าที่ของคุณคือจับผิดคำในบทความอย่างละเอียดที่สุด ตอบกลับเป็น JSON Format เท่านั้น โครงสร้างดังนี้:
-    { "spellIssues": [{ "wrong": "คำที่พิมพ์ผิด", "correct": "คำที่ถูกต้อง", "reason": "สะกดผิด หรือ ไม้ยมกผิด" }], "contextIssues": [{ "wrong": "ประโยคที่ผิดบริบท/พิมพ์ตก", "correct": "คำแนะนำการแก้", "reason": "ประโยคแปลก/พิมพ์ตก" }] }
-    ห้ามเอาคำเชื่อม (เช่น เพราะ จึง และ หรือ) มาเป็นคำผิดเด็ดขาด ข้อมูล wrong ต้องดึงมาจากต้นฉบับเป๊ะๆ`;
+    const systemInstruction = `คุณคือผู้ช่วยบรรณาธิการของ "Thairath Plus" มีหน้าที่จัดรูปแบบบทความ ให้ตอบกลับเป็น JSON Format เท่านั้น โครงสร้างดังนี้:
+    { "cleanedText": "เนื้อหาต้นฉบับ 100% ห้ามตัดทอน ลบแค่ลิงก์อ้างอิงท้ายบทความออก", "hashtags": "#ThairathPlus #ไทยรัฐพลัส #แท็กภาษาไทย", "references": "Source (YEAR). TOPIC. LINK", "inFocus": "• สรุปข้อ 1\\n• สรุปข้อ 2" }`;
 
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
